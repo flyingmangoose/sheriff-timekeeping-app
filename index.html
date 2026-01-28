@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santa Fe County Sheriff - Timekeeping System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6; }
+
+        /* Login Page */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f1d2f 100%);
+        }
+        .login-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 420px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .badge-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .badge-icon svg { width: 45px; height: 45px; fill: #1e3a5f; }
+        .login-header h1 { color: #1e3a5f; font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .login-header p { color: #6b7280; font-size: 0.9rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; color: #374151; font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input:focus { outline: none; border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,0.1); }
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(30,58,95,0.3); }
+        .error-msg { background: #fef2f2; color: #dc2626; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; text-align: center; }
+        .hidden { display: none !important; }
+        .demo-creds { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; }
+        .demo-creds p { font-size: 0.8rem; color: #6b7280; text-align: center; margin-bottom: 0.5rem; }
+        .demo-creds code { background: #f3f4f6; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+
+        /* App Layout */
+        .app-container { display: none; min-height: 100vh; }
+        .app-container.active { display: block; }
+        .top-bar {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f1d2f 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar h1 { font-size: 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+        .top-bar-badge { width: 36px; height: 36px; background: #eab308; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .top-bar-badge svg { width: 20px; height: 20px; fill: #1e3a5f; }
+        .user-info { display: flex; align-items: center; gap: 1rem; }
+        .user-info span { font-size: 0.9rem; }
+        .btn-logout {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover { background: rgba(255,255,255,0.2); }
+
+        /* Navigation */
+        .nav-bar {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0 2rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .nav-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: #1e3a5f; }
+        .nav-btn.active { color: #1e3a5f; border-bottom-color: #eab308; }
+
+        /* Main Content */
+        .main-content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .card-header h2 { color: #1e3a5f; font-size: 1.25rem; }
+
+        /* Time Clock */
+        .time-clock-display {
+            text-align: center;
+            padding: 2rem;
+        }
+        .current-time { font-size: 4rem; font-weight: 700; color: #1e3a5f; font-variant-numeric: tabular-nums; }
+        .current-date { font-size: 1.25rem; color: #6b7280; margin-top: 0.5rem; }
+        .clock-status {
+            margin: 2rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .clock-status.clocked-out { background: #fef3c7; color: #92400e; }
+        .clock-status.clocked-in { background: #d1fae5; color: #065f46; }
+        .clock-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-clock {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-clock-in { background: #059669; color: white; }
+        .btn-clock-in:hover { background: #047857; }
+        .btn-clock-out { background: #dc2626; color: white; }
+        .btn-clock-out:hover { background: #b91c1c; }
+        .btn-clock:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Time Bucket Selection */
+        .time-buckets { margin-top: 2rem; }
+        .time-buckets h3 { color: #374151; margin-bottom: 1rem; font-size: 1rem; }
+        .bucket-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; }
+        .bucket-btn {
+            padding: 0.875rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .bucket-btn:hover { border-color: #1e3a5f; }
+        .bucket-btn.selected { border-color: #1e3a5f; background: #eff6ff; }
+        .bucket-btn .bucket-name { font-weight: 600; color: #1e3a5f; font-size: 0.9rem; }
+        .bucket-btn .bucket-rate { font-size: 0.8rem; color: #6b7280; margin-top: 0.25rem; }
+
+        /* Tables */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .data-table th { background: #f9fafb; color: #374151; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .data-table tr:hover { background: #f9fafb; }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-approved { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+
+        /* Action Buttons */
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            transition: all 0.2s;
+        }
+        .btn-approve { background: #059669; color: white; }
+        .btn-approve:hover { background: #047857; }
+        .btn-reject { background: #dc2626; color: white; }
+        .btn-reject:hover { background: #b91c1c; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-card .stat-label { font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem; }
+        .stat-card .stat-value { font-size: 2rem; font-weight: 700; color: #1e3a5f; }
+        .stat-card .stat-sub { font-size: 0.8rem; color: #9ca3af; margin-top: 0.25rem; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-header h2 { color: #1e3a5f; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        .modal-body .form-group { margin-bottom: 1rem; }
+        .modal-body select, .modal-body textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .modal-footer { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
+        .btn-secondary {
+            padding: 0.75rem 1.5rem;
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .btn-submit {
+            padding: 0.75rem 1.5rem;
+            background: #1e3a5f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .top-bar { padding: 1rem; flex-direction: column; gap: 1rem; }
+            .nav-bar { overflow-x: auto; padding: 0 1rem; }
+            .main-content { padding: 1rem; }
+            .current-time { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="badge-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.8 1.1 2.8 2.5V11c.6.2 1.2.8 1.2 1.5v3c0 .8-.7 1.5-1.5 1.5h-5c-.8 0-1.5-.7-1.5-1.5v-3c0-.7.5-1.3 1.2-1.5V9.5C9.2 8.1 10.6 7 12 7zm0 1.2c-.8 0-1.5.7-1.5 1.3V11h3V9.5c0-.6-.7-1.3-1.5-1.3z"/></svg>
+                </div>
+                <h1>Santa Fe County Sheriff</h1>
+                <p>Timekeeping Management System</p>
+            </div>
+            <div id="error-msg" class="error-msg hidden"></div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+            <button type="button" class="btn-primary" id="login-btn" onclick="handleLogin()">Sign In</button>
+            <div class="demo-creds">
+                <p>Demo Credentials:</p>
+                <p><code>deputy/demo</code> · <code>sergeant/demo</code> · <code>admin/demo</code></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app-container" class="app-container">
+        <div class="top-bar">
+            <h1>
+                <div class="top-bar-badge">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                </div>
+                Santa Fe County Sheriff - Timekeeping
+            </h1>
+            <div class="user-info">
+                <span id="user-display"></span>
+                <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
+            </div>
+        </div>
+        <div class="nav-bar" id="nav-bar"></div>
+        <div class="main-content" id="main-content"></div>
+    </div>
+
+    <!-- Submit Shift Modal -->
+    <div id="submit-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Submit Shift for Approval</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Time Bucket</label>
+                    <select id="modal-bucket">
+                        <option value="regular">Regular Hours</option>
+                        <option value="overtime">Overtime (1.5x)</option>
+                        <option value="holiday">Holiday Premium (2x)</option>
+                        <option value="court">Court Time</option>
+                        <option value="callback">Callback</option>
+                        <option value="oncall">On-Call</option>
+                        <option value="training">Training</option>
+                        <option value="sick">Sick Leave</option>
+                        <option value="annual">Annual Leave</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notes (Optional)</label>
+                    <textarea id="modal-notes" rows="3" placeholder="Add any notes for your supervisor..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-submit" onclick="submitShift()">Submit for Approval</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CBA-Compliant Time Buckets (Section 14 & 15)
+        var TIME_BUCKETS = [
+            { id: 'regular', name: 'Regular Hours', multiplier: 1.0 },
+            { id: 'overtime', name: 'Overtime', multiplier: 1.5 },
+            { id: 'holiday', name: 'Holiday Premium', multiplier: 2.0 },
+            { id: 'court', name: 'Court Time', multiplier: 1.5 },
+            { id: 'callback', name: 'Callback', multiplier: 1.5 },
+            { id: 'oncall', name: 'On-Call', multiplier: 0.25 },
+            { id: 'training', name: 'Training', multiplier: 1.0 },
+            { id: 'sick', name: 'Sick Leave', multiplier: 1.0 },
+            { id: 'annual', name: 'Annual Leave', multiplier: 1.0 }
+        ];
+
+        // Pay rates from CBA Section 36
+        var RANK_RATES = {
+            'Deputy I': 34.03,
+            'Deputy II': 35.75,
+            'Deputy III': 41.25,
+            'Corporal': 44.00,
+            'Sergeant': 47.70,
+            'Lieutenant': 52.00
+        };
+
+        // Sample deputies
+        var SAMPLE_DEPUTIES = [
+            { id: 1, name: 'Michael Rodriguez', badge: 'SF-2847', rank: 'Deputy II' },
+            { id: 2, name: 'Sarah Chen', badge: 'SF-3012', rank: 'Deputy I' },
+            { id: 3, name: 'James Wilson', badge: 'SF-2156', rank: 'Deputy III' },
+            { id: 4, name: 'Maria Garcia', badge: 'SF-2934', rank: 'Corporal' },
+            { id: 5, name: 'Robert Thompson', badge: 'SF-1823', rank: 'Sergeant' }
+        ];
+
+        // Sample shifts for approval
+        var shifts = [
+            { id: 1, odfficerId: 1, date: '2024-01-15', hours: 10, bucket: 'regular', status: 'pending', notes: 'Regular patrol shift' },
+            { id: 2, odfficerId: 2, date: '2024-01-15', hours: 4, bucket: 'overtime', status: 'pending', notes: 'Extended shift - accident scene' },
+            { id: 3, odfficerId: 3, date: '2024-01-14', hours: 8, bucket: 'regular', status: 'approved', notes: '' },
+            { id: 4, odfficerId: 1, date: '2024-01-14', hours: 3, bucket: 'court', status: 'approved', notes: 'State v. Johnson testimony' },
+            { id: 5, odfficerId: 4, date: '2024-01-13', hours: 8, bucket: 'training', status: 'approved', notes: 'Firearms recertification' }
+        ];
+
+        // App state
+        var currentUser = null;
+        var currentView = 'timeclock';
+        var isClockedIn = false;
+        var clockInTime = null;
+        var selectedBucket = 'regular';
+        var clockInterval = null;
+
+        // DOM Elements
+        var loginScreen = document.getElementById('login-screen');
+        var appContainer = document.getElementById('app-container');
+        var errorMsg = document.getElementById('error-msg');
+
+        // Handle login
+        function handleLogin() {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            errorMsg.classList.add('hidden');
+            document.getElementById('login-btn').textContent = 'Signing In...';
+
+            setTimeout(function() {
+                if (username === 'deputy' && password === 'demo') {
+                    currentUser = { id: 1, name: 'Michael Rodriguez', badge: 'SF-2847', rank: 'Deputy II', role: 'deputy' };
+                    showApp();
+                } else if (username === 'sergeant' && password === 'demo') {
+                    currentUser = { id: 5, name: 'Robert Thompson', badge: 'SF-1823', rank: 'Sergeant', role: 'supervisor' };
+                    currentView = 'approvals';
+                    showApp();
+                } else if (username === 'admin' && password === 'demo') {
+                    currentUser = { id: 0, name: 'Admin User', badge: 'SF-0001', rank: 'Lieutenant', role: 'admin' };
+                    currentView = 'reports';
+                    showApp();
+                } else {
+                    errorMsg.textContent = 'Invalid credentials. Try: deputy/demo, sergeant/demo, or admin/demo';
+                    errorMsg.classList.remove('hidden');
+                }
+                document.getElementById('login-btn').textContent = 'Sign In';
+            }, 500);
+        }
+
+        // Handle logout
+        function handleLogout() {
+            currentUser = null;
+            currentView = 'timeclock';
+            isClockedIn = false;
+            clockInTime = null;
+            if (clockInterval) clearInterval(clockInterval);
+            loginScreen.style.display = 'flex';
+            appContainer.classList.remove('active');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Show main app
+        function showApp() {
+            loginScreen.style.display = 'none';
+            appContainer.classList.add('active');
+            document.getElementById('user-display').textContent = currentUser.name + ' (' + currentUser.rank + ')';
+            renderNav();
+            renderView();
+        }
+
+        // Render navigation
+        function renderNav() {
+            var navHtml = '';
+
+            if (currentUser.role === 'deputy' || currentUser.role === 'supervisor' || currentUser.role === 'admin') {
+                navHtml += '<button class="nav-btn ' + (currentView === 'timeclock' ? 'active' : '') + '" onclick="switchView(\'timeclock\')">Time Clock</button>';
+                navHtml += '<button class="nav-btn ' + (currentView === 'myhours' ? 'active' : '') + '" onclick="switchView(\'myhours\')">My Hours</button>';
+            }
+
+            if (currentUser.role === 'supervisor' || currentUser.role === 'admin') {
+                navHtml += '<button class="nav-btn ' + (currentView === 'approvals' ? 'active' : '') + '" onclick="switchView(\'approvals\')">Approvals</button>';
+            }
+
+            if (currentUser.role === 'admin') {
+                navHtml += '<button class="nav-btn ' + (currentView === 'reports' ? 'active' : '') + '" onclick="switchView(\'reports\')">Reports</button>';
+            }
+
+            document.getElementById('nav-bar').innerHTML = navHtml;
+        }
+
+        // Switch view
+        function switchView(view) {
+            currentView = view;
+            renderNav();
+            renderView();
+        }
+
+        // Render current view
+        function renderView() {
+            var content = '';
+            switch(currentView) {
+                case 'timeclock':
+                    content = renderTimeClock();
+                    break;
+                case 'myhours':
+                    content = renderMyHours();
+                    break;
+                case 'approvals':
+                    content = renderApprovals();
+                    break;
+                case 'reports':
+                    content = renderReports();
+                    break;
+            }
+            document.getElementById('main-content').innerHTML = content;
+
+            if (currentView === 'timeclock') {
+                startClock();
+            }
+        }
+
+        // Format time
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        // Format date
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // Start clock update
+        function startClock() {
+            if (clockInterval) clearInterval(clockInterval);
+
+            function updateClock() {
+                var timeEl = document.getElementById('current-time');
+                var dateEl = document.getElementById('current-date');
+                if (timeEl && dateEl) {
+                    var now = new Date();
+                    timeEl.textContent = formatTime(now);
+                    dateEl.textContent = formatDate(now);
+                }
+            }
+
+            updateClock();
+            clockInterval = setInterval(updateClock, 1000);
+        }
+
+        // Render time clock view
+        function renderTimeClock() {
+            var now = new Date();
+            var statusClass = isClockedIn ? 'clocked-in' : 'clocked-out';
+            var statusText = isClockedIn ? 'CLOCKED IN since ' + formatTime(clockInTime) : 'CLOCKED OUT';
+
+            var bucketsHtml = TIME_BUCKETS.map(function(bucket) {
+                var rate = RANK_RATES[currentUser.rank] * bucket.multiplier;
+                return '<button class="bucket-btn ' + (selectedBucket === bucket.id ? 'selected' : '') + '" onclick="selectBucket(\'' + bucket.id + '\')">' +
+                    '<div class="bucket-name">' + bucket.name + '</div>' +
+                    '<div class="bucket-rate">$' + rate.toFixed(2) + '/hr (' + bucket.multiplier + 'x)</div>' +
+                '</button>';
+            }).join('');
+
+            return '<div class="card">' +
+                '<div class="time-clock-display">' +
+                    '<div class="current-time" id="current-time">' + formatTime(now) + '</div>' +
+                    '<div class="current-date" id="current-date">' + formatDate(now) + '</div>' +
+                    '<div class="clock-status ' + statusClass + '">' + statusText + '</div>' +
+                    '<div class="clock-buttons">' +
+                        '<button class="btn-clock btn-clock-in" onclick="clockIn()" ' + (isClockedIn ? 'disabled' : '') + '>Clock In</button>' +
+                        '<button class="btn-clock btn-clock-out" onclick="clockOut()" ' + (!isClockedIn ? 'disabled' : '') + '>Clock Out</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="card">' +
+                '<div class="card-header"><h2>Select Time Bucket</h2></div>' +
+                '<p style="color: #6b7280; margin-bottom: 1rem; font-size: 0.9rem;">Per CBA Section 14 & 15 - Select the appropriate category for your shift</p>' +
+                '<div class="bucket-grid">' + bucketsHtml + '</div>' +
+            '</div>';
+        }
+
+        // Select time bucket
+        function selectBucket(bucketId) {
+            selectedBucket = bucketId;
+            renderView();
+        }
+
+        // Clock in
+        function clockIn() {
+            isClockedIn = true;
+            clockInTime = new Date();
+            renderView();
+        }
+
+        // Clock out
+        function clockOut() {
+            document.getElementById('submit-modal').classList.remove('hidden');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('submit-modal').classList.add('hidden');
+        }
+
+        // Submit shift
+        function submitShift() {
+            var bucket = document.getElementById('modal-bucket').value;
+            var notes = document.getElementById('modal-notes').value;
+
+            var endTime = new Date();
+            var hoursWorked = (endTime - clockInTime) / (1000 * 60 * 60);
+
+            shifts.unshift({
+                id: shifts.length + 1,
+                odfficerId: currentUser.id,
+                date: clockInTime.toISOString().split('T')[0],
+                hours: Math.round(hoursWorked * 100) / 100,
+                bucket: bucket,
+                status: 'pending',
+                notes: notes
+            });
+
+            isClockedIn = false;
+            clockInTime = null;
+            closeModal();
+            renderView();
+            alert('Shift submitted for approval!');
+        }
+
+        // Render my hours view
+        function renderMyHours() {
+            var myShifts = shifts.filter(function(s) { return s.odfficerId === currentUser.id; });
+
+            var totalHours = myShifts.reduce(function(sum, s) { return sum + s.hours; }, 0);
+            var pendingHours = myShifts.filter(function(s) { return s.status === 'pending'; }).reduce(function(sum, s) { return sum + s.hours; }, 0);
+            var approvedHours = myShifts.filter(function(s) { return s.status === 'approved'; }).reduce(function(sum, s) { return sum + s.hours; }, 0);
+
+            var tableRows = myShifts.map(function(shift) {
+                var bucket = TIME_BUCKETS.find(function(b) { return b.id === shift.bucket; });
+                var rate = RANK_RATES[currentUser.rank] * bucket.multiplier;
+                var earnings = shift.hours * rate;
+
+                return '<tr>' +
+                    '<td>' + shift.date + '</td>' +
+                    '<td>' + shift.hours.toFixed(2) + '</td>' +
+                    '<td>' + bucket.name + '</td>' +
+                    '<td>$' + earnings.toFixed(2) + '</td>' +
+                    '<td><span class="status-badge status-' + shift.status + '">' + shift.status.charAt(0).toUpperCase() + shift.status.slice(1) + '</span></td>' +
+                '</tr>';
+            }).join('');
+
+            return '<div class="stats-grid">' +
+                '<div class="stat-card"><div class="stat-label">Total Hours</div><div class="stat-value">' + totalHours.toFixed(1) + '</div><div class="stat-sub">This pay period</div></div>' +
+                '<div class="stat-card"><div class="stat-label">Pending Approval</div><div class="stat-value">' + pendingHours.toFixed(1) + '</div><div class="stat-sub">Awaiting supervisor</div></div>' +
+                '<div class="stat-card"><div class="stat-label">Approved Hours</div><div class="stat-value">' + approvedHours.toFixed(1) + '</div><div class="stat-sub">Ready for payroll</div></div>' +
+            '</div>' +
+            '<div class="card">' +
+                '<div class="card-header"><h2>My Time Entries</h2></div>' +
+                '<table class="data-table">' +
+                    '<thead><tr><th>Date</th><th>Hours</th><th>Category</th><th>Earnings</th><th>Status</th></tr></thead>' +
+                    '<tbody>' + (tableRows || '<tr><td colspan="5" style="text-align:center;color:#6b7280;">No time entries yet</td></tr>') + '</tbody>' +
+                '</table>' +
+            '</div>';
+        }
+
+        // Render approvals view
+        function renderApprovals() {
+            var pendingShifts = shifts.filter(function(s) { return s.status === 'pending'; });
+
+            var tableRows = pendingShifts.map(function(shift) {
+                var deputy = SAMPLE_DEPUTIES.find(function(d) { return d.id === shift.odfficerId; }) || { name: 'Unknown', badge: 'N/A', rank: 'N/A' };
+                var bucket = TIME_BUCKETS.find(function(b) { return b.id === shift.bucket; });
+
+                return '<tr>' +
+                    '<td><strong>' + deputy.name + '</strong><br><span style="color:#6b7280;font-size:0.85rem;">' + deputy.badge + '</span></td>' +
+                    '<td>' + shift.date + '</td>' +
+                    '<td>' + shift.hours.toFixed(2) + '</td>' +
+                    '<td>' + bucket.name + '</td>' +
+                    '<td>' + (shift.notes || '-') + '</td>' +
+                    '<td>' +
+                        '<button class="btn-action btn-approve" onclick="approveShift(' + shift.id + ')">Approve</button>' +
+                        '<button class="btn-action btn-reject" onclick="rejectShift(' + shift.id + ')">Reject</button>' +
+                    '</td>' +
+                '</tr>';
+            }).join('');
+
+            return '<div class="stats-grid">' +
+                '<div class="stat-card"><div class="stat-label">Pending Approvals</div><div class="stat-value">' + pendingShifts.length + '</div><div class="stat-sub">Requires attention</div></div>' +
+            '</div>' +
+            '<div class="card">' +
+                '<div class="card-header"><h2>Shifts Pending Approval</h2></div>' +
+                '<table class="data-table">' +
+                    '<thead><tr><th>Deputy</th><th>Date</th><th>Hours</th><th>Category</th><th>Notes</th><th>Actions</th></tr></thead>' +
+                    '<tbody>' + (tableRows || '<tr><td colspan="6" style="text-align:center;color:#6b7280;">No pending approvals</td></tr>') + '</tbody>' +
+                '</table>' +
+            '</div>';
+        }
+
+        // Approve shift
+        function approveShift(shiftId) {
+            var shift = shifts.find(function(s) { return s.id === shiftId; });
+            if (shift) {
+                shift.status = 'approved';
+                renderView();
+            }
+        }
+
+        // Reject shift
+        function rejectShift(shiftId) {
+            var shift = shifts.find(function(s) { return s.id === shiftId; });
+            if (shift) {
+                shift.status = 'rejected';
+                renderView();
+            }
+        }
+
+        // Render reports view
+        function renderReports() {
+            var totalByBucket = {};
+            TIME_BUCKETS.forEach(function(bucket) {
+                totalByBucket[bucket.id] = 0;
+            });
+
+            shifts.filter(function(s) { return s.status === 'approved'; }).forEach(function(shift) {
+                totalByBucket[shift.bucket] += shift.hours;
+            });
+
+            var bucketRows = TIME_BUCKETS.map(function(bucket) {
+                var hours = totalByBucket[bucket.id];
+                var avgRate = 40; // Average rate for estimation
+                var cost = hours * avgRate * bucket.multiplier;
+                return '<tr>' +
+                    '<td>' + bucket.name + '</td>' +
+                    '<td>' + hours.toFixed(2) + '</td>' +
+                    '<td>' + bucket.multiplier + 'x</td>' +
+                    '<td>$' + cost.toFixed(2) + '</td>' +
+                '</tr>';
+            }).join('');
+
+            var totalApproved = shifts.filter(function(s) { return s.status === 'approved'; }).length;
+            var totalPending = shifts.filter(function(s) { return s.status === 'pending'; }).length;
+            var totalHours = shifts.filter(function(s) { return s.status === 'approved'; }).reduce(function(sum, s) { return sum + s.hours; }, 0);
+
+            return '<div class="stats-grid">' +
+                '<div class="stat-card"><div class="stat-label">Total Approved Hours</div><div class="stat-value">' + totalHours.toFixed(1) + '</div><div class="stat-sub">This pay period</div></div>' +
+                '<div class="stat-card"><div class="stat-label">Approved Entries</div><div class="stat-value">' + totalApproved + '</div><div class="stat-sub">Ready for payroll</div></div>' +
+                '<div class="stat-card"><div class="stat-label">Pending Entries</div><div class="stat-value">' + totalPending + '</div><div class="stat-sub">Awaiting approval</div></div>' +
+                '<div class="stat-card"><div class="stat-label">Active Deputies</div><div class="stat-value">' + SAMPLE_DEPUTIES.length + '</div><div class="stat-sub">In system</div></div>' +
+            '</div>' +
+            '<div class="card">' +
+                '<div class="card-header"><h2>Hours by Category (CBA Compliance Report)</h2></div>' +
+                '<table class="data-table">' +
+                    '<thead><tr><th>Category</th><th>Hours</th><th>Rate Multiplier</th><th>Est. Cost</th></tr></thead>' +
+                    '<tbody>' + bucketRows + '</tbody>' +
+                '</table>' +
+            '</div>';
+        }
+
+        // Allow Enter key to submit login
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+        document.getElementById('username').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+    </script>
+</body>
+</html>
