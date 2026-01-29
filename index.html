@@ -869,6 +869,70 @@
         }
 
         .hidden { display: none !important; }
+
+        /* Filter Chips */
+        .filter-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--slate-500);
+            margin-right: 0.25rem;
+        }
+        .filter-chip {
+            padding: 0.375rem 0.75rem;
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--slate-600);
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .filter-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .filter-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        @media (min-width: 600px) {
+            .summary-cards { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .summary-cards { grid-template-columns: repeat(5, 1fr); }
+        }
+        .summary-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            border: 1px solid var(--slate-200);
+            text-align: center;
+        }
+        .summary-card.highlight {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+        }
+        .summary-card.highlight .summary-label { color: rgba(255,255,255,0.8); }
+        .summary-value { font-size: 1.25rem; font-weight: 800; color: var(--slate-900); }
+        .summary-card.highlight .summary-value { color: white; }
+        .summary-label { font-size: 0.65rem; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.25rem; }
     </style>
 </head>
 <body>
@@ -1050,7 +1114,7 @@
             { id: 8, odfficerId: 5, date: '2025-01-26', clockIn: '08:00', clockOut: '16:00', hours: 8, bucket: 'regular', status: 'approved', notes: '' }
         ];
         const leaveBalances = { 1: { sick: 72, annual: 96 }, 2: { sick: 88, annual: 80 }, 3: { sick: 64, annual: 112 }, 4: { sick: 96, annual: 120 }, 5: { sick: 48, annual: 64 } };
-        let currentUser = null, currentView = 'dashboard', isClockedIn = false, clockInTime = null, clockInterval = null;
+        let currentUser = null, currentView = 'dashboard', isClockedIn = false, clockInTime = null, clockInterval = null, reportFilter = 'all';
 
         function handleLogin() {
             const u = document.getElementById('username').value, p = document.getElementById('password').value;
@@ -1203,17 +1267,134 @@
                 return `<div class="approval-card"><div class="approval-header"><div class="approval-avatar">${d.name.split(' ').map(n => n[0]).join('')}</div><div class="approval-info"><div class="approval-name">${d.name}</div><div class="approval-meta">${d.badge} · ${d.rank}</div></div><span class="badge badge-pending">${b.name}</span></div><div class="approval-body"><div class="approval-grid"><div><div class="approval-stat-value">${s.date}</div><div class="approval-stat-label">Date</div></div><div><div class="approval-stat-value">${s.hours}h</div><div class="approval-stat-label">Hours</div></div><div><div class="approval-stat-value">$${(s.hours * rate).toFixed(0)}</div><div class="approval-stat-label">Amount</div></div></div>${s.notes ? `<div class="approval-notes">"${s.notes}"</div>` : ''}<div class="approval-actions"><button class="btn btn-approve" onclick="approveShift(${s.id})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Approve</button><button class="btn btn-reject" onclick="rejectShift(${s.id})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Reject</button></div></div></div>`;
             }).join('')}`;
         }
+        function setReportFilter(filter) {
+            reportFilter = filter;
+            renderView();
+        }
         function renderReports() {
             const approved = shifts.filter(s => s.status === 'approved');
-            return `<div class="page-header"><h2 class="page-title">Reports</h2></div><div class="export-bar"><button class="btn-export" onclick="exportCSV()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export CSV</button><button class="btn-export"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Email Payroll</button></div><div class="card"><div class="card-header"><h3 class="card-title">Hours by Officer</h3></div><div class="card-body flush"><div class="table-container"><table class="data-table"><thead><tr><th>Officer</th><th style="text-align:right">Reg</th><th style="text-align:right">OT</th><th style="text-align:right">Leave</th><th style="text-align:right">Total</th><th style="text-align:right">Cost</th></tr></thead><tbody>${SAMPLE_DEPUTIES.map(d => {
-                const ds = approved.filter(s => s.odfficerId === d.id);
-                const reg = ds.filter(s => ['regular', 'training'].includes(s.bucket)).reduce((sum, s) => sum + s.hours, 0);
-                const ot = ds.filter(s => ['overtime', 'holiday'].includes(s.bucket)).reduce((sum, s) => sum + s.hours, 0);
-                const lv = ds.filter(s => ['sick', 'annual'].includes(s.bucket)).reduce((sum, s) => sum + s.hours, 0);
-                const total = reg + ot + lv;
-                const cost = (reg * RANK_RATES[d.rank]) + (ot * RANK_RATES[d.rank] * 1.5) + (lv * RANK_RATES[d.rank]);
-                return `<tr><td><strong>${d.name}</strong><br><span style="color:var(--slate-500);font-size:0.7rem">${d.badge}</span></td><td style="text-align:right">${reg.toFixed(1)}</td><td style="text-align:right">${ot.toFixed(1)}</td><td style="text-align:right">${lv.toFixed(1)}</td><td style="text-align:right;font-weight:700">${total.toFixed(1)}</td><td style="text-align:right;font-weight:700">$${cost.toFixed(0)}</td></tr>`;
-            }).join('')}</tbody></table></div></div></div>`;
+            const filtered = reportFilter === 'all' ? approved : approved.filter(s => s.bucket === reportFilter);
+
+            // Calculate totals by bucket type
+            const bucketTotals = {};
+            TIME_BUCKETS.forEach(b => {
+                bucketTotals[b.id] = approved.filter(s => s.bucket === b.id).reduce((sum, s) => sum + s.hours, 0);
+            });
+            const grandTotal = approved.reduce((sum, s) => sum + s.hours, 0);
+
+            // Calculate total cost
+            let totalCost = 0;
+            approved.forEach(s => {
+                const d = SAMPLE_DEPUTIES.find(x => x.id === s.odfficerId);
+                const b = TIME_BUCKETS.find(x => x.id === s.bucket);
+                if (d && b) totalCost += s.hours * RANK_RATES[d.rank] * b.multiplier;
+            });
+
+            // Filter chips
+            const filterChips = [
+                { id: 'all', name: 'All Types' },
+                ...TIME_BUCKETS
+            ];
+
+            return `
+                <div class="page-header"><h2 class="page-title">Reports</h2></div>
+
+                <div class="summary-cards">
+                    <div class="summary-card highlight">
+                        <div class="summary-value">${grandTotal.toFixed(1)}h</div>
+                        <div class="summary-label">Total Hours</div>
+                    </div>
+                    <div class="summary-card highlight">
+                        <div class="summary-value">$${totalCost.toFixed(0)}</div>
+                        <div class="summary-label">Total Cost</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">${bucketTotals.regular.toFixed(1)}h</div>
+                        <div class="summary-label">Regular</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">${(bucketTotals.overtime + bucketTotals.holiday).toFixed(1)}h</div>
+                        <div class="summary-label">Overtime</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">${(bucketTotals.sick + bucketTotals.annual).toFixed(1)}h</div>
+                        <div class="summary-label">Leave</div>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <span class="filter-label">Filter by:</span>
+                    ${filterChips.map(f => `<button class="filter-chip ${reportFilter === f.id ? 'active' : ''}" onclick="setReportFilter('${f.id}')">${f.name}</button>`).join('')}
+                </div>
+
+                <div class="export-bar">
+                    <button class="btn-export" onclick="exportCSV()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Export CSV
+                    </button>
+                    <button class="btn-export">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        Email Payroll
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Hours by Officer ${reportFilter !== 'all' ? `- ${TIME_BUCKETS.find(b => b.id === reportFilter)?.name || ''}` : ''}</h3>
+                    </div>
+                    <div class="card-body flush">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Officer</th>
+                                        <th style="text-align:right">Regular</th>
+                                        <th style="text-align:right">OT</th>
+                                        <th style="text-align:right">Holiday</th>
+                                        <th style="text-align:right">Court</th>
+                                        <th style="text-align:right">Callback</th>
+                                        <th style="text-align:right">On-Call</th>
+                                        <th style="text-align:right">Training</th>
+                                        <th style="text-align:right">Sick</th>
+                                        <th style="text-align:right">Annual</th>
+                                        <th style="text-align:right">Total</th>
+                                        <th style="text-align:right">Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${SAMPLE_DEPUTIES.map(d => {
+                                        const ds = filtered.filter(s => s.odfficerId === d.id);
+                                        const byBucket = {};
+                                        TIME_BUCKETS.forEach(b => {
+                                            byBucket[b.id] = ds.filter(s => s.bucket === b.id).reduce((sum, s) => sum + s.hours, 0);
+                                        });
+                                        const total = ds.reduce((sum, s) => sum + s.hours, 0);
+                                        let cost = 0;
+                                        ds.forEach(s => {
+                                            const b = TIME_BUCKETS.find(x => x.id === s.bucket);
+                                            cost += s.hours * RANK_RATES[d.rank] * b.multiplier;
+                                        });
+                                        return `<tr>
+                                            <td><strong>${d.name}</strong><br><span style="color:var(--slate-500);font-size:0.7rem">${d.badge}</span></td>
+                                            <td style="text-align:right">${byBucket.regular > 0 ? byBucket.regular.toFixed(1) : '-'}</td>
+                                            <td style="text-align:right">${byBucket.overtime > 0 ? byBucket.overtime.toFixed(1) : '-'}</td>
+                                            <td style="text-align:right">${byBucket.holiday > 0 ? byBucket.holiday.toFixed(1) : '-'}</td>
+                                            <td style="text-align:right">${byBucket.court > 0 ? byBucket.court.toFixed(1) : '-'}</td>
+                                            <td style="text-align:right">${byBucket.callback > 0 ? byBucket.callback.toFixed(1) : '-'}</td>
+                                            <td style="text-align:right">${byBucket.oncall > 0 ? byBucket.oncall.toFixed(1) : '-'}</td>
+                                            <td style="text-align:right">${byBucket.training > 0 ? byBucket.training.toFixed(1) : '-'}</td>
+                                            <td style="text-align:right">${byBucket.sick > 0 ? byBucket.sick.toFixed(1) : '-'}</td>
+                                            <td style="text-align:right">${byBucket.annual > 0 ? byBucket.annual.toFixed(1) : '-'}</td>
+                                            <td style="text-align:right;font-weight:700">${total.toFixed(1)}</td>
+                                            <td style="text-align:right;font-weight:700">$${cost.toFixed(0)}</td>
+                                        </tr>`;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
         function clockIn() { isClockedIn = true; clockInTime = new Date(); showToast('Clocked in successfully!', 'success'); renderView(); }
         function openClockOutModal() { document.getElementById('clockOutModal').classList.add('show'); }
