@@ -2,355 +2,998 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Santa Fe County Sheriff - Timekeeping System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0F172A">
+    <title>TimeGuard | Santa Fe County Sheriff's Office</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6; }
+        :root {
+            --primary: #0F4C5C;
+            --primary-dark: #0A3640;
+            --primary-light: #E8F4F6;
+            --accent: #D4A574;
+            --accent-dark: #B8915F;
+            --success: #10B981;
+            --success-light: #D1FAE5;
+            --success-dark: #059669;
+            --warning: #F59E0B;
+            --warning-light: #FEF3C7;
+            --danger: #EF4444;
+            --danger-light: #FEE2E2;
+            --slate-50: #F8FAFC;
+            --slate-100: #F1F5F9;
+            --slate-200: #E2E8F0;
+            --slate-300: #CBD5E1;
+            --slate-400: #94A3B8;
+            --slate-500: #64748B;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1E293B;
+            --slate-900: #0F172A;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
 
-        /* Login Page */
-        .login-container {
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--slate-100);
+            color: var(--slate-800);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
             min-height: 100vh;
+            min-height: -webkit-fill-available;
+        }
+
+        /* ===== LOGIN ===== */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, var(--slate-900) 0%, var(--primary-dark) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .login-screen::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse, rgba(212,165,116,0.08) 0%, transparent 70%);
+        }
+        .login-left {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem;
+        }
+        .login-left h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+        .login-left h1 span { color: var(--accent); }
+        .login-left p {
+            font-size: 1rem;
+            color: var(--slate-400);
+            max-width: 380px;
+        }
+        .login-features {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .login-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--slate-300);
+            font-size: 0.9rem;
+        }
+        .login-feature-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.1);
+            border-radius: var(--radius);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f1d2f 100%);
+        }
+        .login-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
         }
         .login-card {
             background: white;
-            padding: 3rem;
-            border-radius: 12px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
         }
-        .login-header {
+        .login-badge {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.25rem;
+        }
+        .login-badge svg { width: 100%; height: 100%; }
+        .login-title {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
-        .badge-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+        .login-title h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: 0.25rem;
+        }
+        .login-title p { color: var(--slate-500); font-size: 0.85rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--slate-700);
+            margin-bottom: 0.375rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            font-family: inherit;
+            border: 2px solid var(--slate-200);
+            border-radius: var(--radius);
+            transition: all 0.2s;
+            background: var(--slate-50);
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(15,76,92,0.1);
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.15s;
+            touch-action: manipulation;
+        }
+        .btn-primary {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover, .btn-primary:active {
+            background: var(--primary-dark);
+        }
+        .login-demo {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--slate-200);
+            text-align: center;
+        }
+        .login-demo p { font-size: 0.75rem; color: var(--slate-500); margin-bottom: 0.5rem; }
+        .demo-accounts { display: flex; gap: 0.375rem; justify-content: center; flex-wrap: wrap; }
+        .demo-chip {
+            padding: 0.375rem 0.75rem;
+            background: var(--slate-100);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--slate-600);
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+            font-family: inherit;
+            touch-action: manipulation;
+        }
+        .demo-chip:hover, .demo-chip:active, .demo-chip:focus {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary);
+            outline: none;
+        }
+        .error-toast {
+            background: var(--danger-light);
+            color: var(--danger);
+            padding: 0.625rem 0.875rem;
+            border-radius: var(--radius);
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .error-toast.show { display: flex; }
+
+        /* ===== APP ===== */
+        .app { display: none; min-height: 100vh; background: var(--slate-100); }
+        .app.active { display: flex; flex-direction: column; }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--slate-900) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0.75rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+        .header-brand { display: flex; align-items: center; gap: 0.625rem; }
+        .header-logo { width: 36px; height: 36px; }
+        .header-logo svg { width: 100%; height: 100%; }
+        .header-text h1 { font-size: 0.9rem; font-weight: 700; line-height: 1.2; }
+        .header-text span { font-size: 0.65rem; color: var(--accent); font-weight: 700; letter-spacing: 1px; }
+        .header-time {
+            text-align: right;
+            display: none;
+        }
+        .header-time .time { font-size: 1.5rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .header-time .date { font-size: 0.7rem; opacity: 0.8; }
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.625rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: var(--radius);
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
             border-radius: 50%;
-            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--slate-900);
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+        .user-info { display: none; }
+        .user-info .name { font-size: 0.8rem; font-weight: 600; }
+        .user-info .role { font-size: 0.65rem; opacity: 0.8; }
+
+        /* Nav */
+        .nav {
+            background: white;
+            border-bottom: 1px solid var(--slate-200);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .nav::-webkit-scrollbar { display: none; }
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            padding: 0 0.5rem;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--slate-500);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            transition: all 0.15s;
+            cursor: pointer;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            font-family: inherit;
+            min-width: 64px;
+        }
+        .nav-item:hover, .nav-item:active { color: var(--primary); }
+        .nav-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .nav-item svg { width: 22px; height: 22px; }
+        .nav-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.55rem;
+            font-weight: 700;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .badge-icon svg { width: 45px; height: 45px; fill: #1e3a5f; }
-        .login-header h1 { color: #1e3a5f; font-size: 1.5rem; margin-bottom: 0.25rem; }
-        .login-header p { color: #6b7280; font-size: 0.9rem; }
-        .form-group { margin-bottom: 1.25rem; }
-        .form-group label { display: block; color: #374151; font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .form-group input {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .form-group input:focus { outline: none; border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,0.1); }
-        .btn-primary {
-            width: 100%;
+        .nav-item-wrapper { position: relative; }
+
+        /* Main */
+        .main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 1rem;
-            background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+            width: 100%;
+        }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== DASHBOARD ===== */
+        .welcome-bar {
+            margin-bottom: 1rem;
+        }
+        .welcome-bar h2 { font-size: 1.25rem; font-weight: 700; color: var(--slate-900); }
+        .welcome-bar p { font-size: 0.8rem; color: var(--slate-500); }
+
+        /* Clock Card - MDT Optimized */
+        .clock-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
             color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(30,58,95,0.3); }
-        .error-msg { background: #fef2f2; color: #dc2626; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; text-align: center; }
-        .hidden { display: none !important; }
-        .demo-creds { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; }
-        .demo-creds p { font-size: 0.8rem; color: #6b7280; text-align: center; margin-bottom: 0.5rem; }
-        .demo-creds code { background: #f3f4f6; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
-
-        /* App Layout */
-        .app-container { display: none; min-height: 100vh; }
-        .app-container.active { display: block; }
-        .top-bar {
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f1d2f 100%);
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .clock-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 70%;
+            height: 200%;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
         }
-        .top-bar h1 { font-size: 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
-        .top-bar-badge { width: 36px; height: 36px; background: #eab308; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .top-bar-badge svg { width: 20px; height: 20px; fill: #1e3a5f; }
-        .user-info { display: flex; align-items: center; gap: 1rem; }
-        .user-info span { font-size: 0.9rem; }
-        .btn-logout {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: background 0.2s;
-        }
-        .btn-logout:hover { background: rgba(255,255,255,0.2); }
-
-        /* Navigation */
-        .nav-bar {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 0 2rem;
-            display: flex;
-            gap: 0.5rem;
-        }
-        .nav-btn {
-            padding: 1rem 1.5rem;
-            background: none;
-            border: none;
-            color: #6b7280;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-        }
-        .nav-btn:hover { color: #1e3a5f; }
-        .nav-btn.active { color: #1e3a5f; border-bottom-color: #eab308; }
-
-        /* Main Content */
-        .main-content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
-        .card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .card-header h2 { color: #1e3a5f; font-size: 1.25rem; }
-
-        /* Time Clock */
-        .time-clock-display {
-            text-align: center;
-            padding: 2rem;
-        }
-        .current-time { font-size: 4rem; font-weight: 700; color: #1e3a5f; font-variant-numeric: tabular-nums; }
-        .current-date { font-size: 1.25rem; color: #6b7280; margin-top: 0.5rem; }
+        .clock-inner { position: relative; z-index: 1; }
         .clock-status {
-            margin: 2rem 0;
-            padding: 1rem;
-            border-radius: 8px;
-            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
         }
-        .clock-status.clocked-out { background: #fef3c7; color: #92400e; }
-        .clock-status.clocked-in { background: #d1fae5; color: #065f46; }
-        .clock-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-        .btn-clock {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-clock-in { background: #059669; color: white; }
-        .btn-clock-in:hover { background: #047857; }
-        .btn-clock-out { background: #dc2626; color: white; }
-        .btn-clock-out:hover { background: #b91c1c; }
-        .btn-clock:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Time Bucket Selection */
-        .time-buckets { margin-top: 2rem; }
-        .time-buckets h3 { color: #374151; margin-bottom: 1rem; font-size: 1rem; }
-        .bucket-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; }
-        .bucket-btn {
-            padding: 0.875rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
+        .clock-status.active { background: rgba(16,185,129,0.3); }
+        .status-dot {
+            width: 8px;
+            height: 8px;
             background: white;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s;
+            border-radius: 50%;
         }
-        .bucket-btn:hover { border-color: #1e3a5f; }
-        .bucket-btn.selected { border-color: #1e3a5f; background: #eff6ff; }
-        .bucket-btn .bucket-name { font-weight: 600; color: #1e3a5f; font-size: 0.9rem; }
-        .bucket-btn .bucket-rate { font-size: 0.8rem; color: #6b7280; margin-top: 0.25rem; }
-
-        /* Tables */
-        .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th, .data-table td { padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        .data-table th { background: #f9fafb; color: #374151; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .data-table tr:hover { background: #f9fafb; }
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        .status-dot.active { background: #4ADE80; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.1); } }
+        .clock-display {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
         }
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-approved { background: #d1fae5; color: #065f46; }
-        .status-rejected { background: #fee2e2; color: #991b1b; }
-
-        /* Action Buttons */
-        .btn-action {
-            padding: 0.5rem 1rem;
+        .clock-time {
+            font-size: 2.75rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+        .clock-ampm { font-size: 1rem; font-weight: 600; opacity: 0.9; }
+        .clock-date { font-size: 0.85rem; opacity: 0.9; margin-bottom: 1rem; }
+        .clock-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .btn-clock {
+            padding: 1rem;
             border: none;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: inherit;
             cursor: pointer;
-            margin-right: 0.5rem;
-            transition: all 0.2s;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            touch-action: manipulation;
         }
-        .btn-approve { background: #059669; color: white; }
-        .btn-approve:hover { background: #047857; }
-        .btn-reject { background: #dc2626; color: white; }
-        .btn-reject:hover { background: #b91c1c; }
+        .btn-clock svg { width: 20px; height: 20px; }
+        .btn-clock-in {
+            background: white;
+            color: var(--primary);
+        }
+        .btn-clock-in:hover, .btn-clock-in:active {
+            background: var(--slate-100);
+            transform: scale(0.98);
+        }
+        .btn-clock-out {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .btn-clock-out:hover, .btn-clock-out:active {
+            background: rgba(255,255,255,0.25);
+        }
+        .btn-clock:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
 
-        /* Stats Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        /* Stats - MDT Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
         .stat-card {
             background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            border: 1px solid var(--slate-200);
         }
-        .stat-card .stat-label { font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem; }
-        .stat-card .stat-value { font-size: 2rem; font-weight: 700; color: #1e3a5f; }
-        .stat-card .stat-sub { font-size: 0.8rem; color: #9ca3af; margin-top: 0.25rem; }
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .stat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stat-icon svg { width: 16px; height: 16px; }
+        .stat-icon.primary { background: var(--primary-light); color: var(--primary); }
+        .stat-icon.success { background: var(--success-light); color: var(--success-dark); }
+        .stat-icon.warning { background: var(--warning-light); color: var(--warning); }
+        .stat-icon.accent { background: #FEF3E2; color: var(--accent-dark); }
+        .stat-badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+        }
+        .stat-badge.up { background: var(--success-light); color: var(--success-dark); }
+        .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--slate-900); line-height: 1; }
+        .stat-label { font-size: 0.7rem; color: var(--slate-500); font-weight: 500; margin-top: 0.25rem; }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--slate-200);
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--slate-100);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-title { font-size: 0.9rem; font-weight: 700; color: var(--slate-900); }
+        .card-body { padding: 1rem; }
+        .card-body.flush { padding: 0; }
+
+        /* Activity Feed */
+        .activity-list { display: flex; flex-direction: column; }
+        .activity-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--slate-100);
+            transition: background 0.15s;
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-item:active { background: var(--slate-50); }
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .activity-icon svg { width: 14px; height: 14px; }
+        .activity-icon.clock-in { background: var(--success-light); color: var(--success-dark); }
+        .activity-icon.clock-out { background: var(--danger-light); color: var(--danger); }
+        .activity-icon.approved { background: var(--primary-light); color: var(--primary); }
+        .activity-icon.pending { background: var(--warning-light); color: var(--warning); }
+        .activity-content { flex: 1; min-width: 0; }
+        .activity-title { font-size: 0.8rem; font-weight: 600; color: var(--slate-800); }
+        .activity-meta { font-size: 0.7rem; color: var(--slate-500); }
+        .activity-time { font-size: 0.65rem; color: var(--slate-400); white-space: nowrap; }
+
+        /* Chart */
+        .chart-container { padding: 0.75rem 0; }
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.375rem;
+            height: 100px;
+        }
+        .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.375rem; }
+        .bar {
+            width: 100%;
+            max-width: 32px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 3px 3px 0 0;
+            transition: height 0.3s ease;
+            min-height: 3px;
+        }
+        .bar-value { font-size: 0.55rem; font-weight: 700; color: var(--slate-700); }
+        .bar-label { font-size: 0.55rem; color: var(--slate-500); }
+
+        /* Balance Cards */
+        .balance-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+        .balance-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            border: 1px solid var(--slate-200);
+        }
+        .balance-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+        .balance-type { display: flex; align-items: center; gap: 0.5rem; }
+        .balance-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .balance-dot.regular { background: var(--primary); }
+        .balance-dot.overtime { background: var(--accent); }
+        .balance-dot.leave { background: var(--success); }
+        .balance-dot.special { background: #8B5CF6; }
+        .balance-name { font-size: 0.8rem; font-weight: 600; color: var(--slate-700); }
+        .balance-hours { font-size: 1.125rem; font-weight: 800; color: var(--slate-900); }
+        .balance-bar { height: 6px; background: var(--slate-200); border-radius: 3px; overflow: hidden; margin-bottom: 0.375rem; }
+        .balance-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+        .balance-fill.regular { background: var(--primary); }
+        .balance-fill.overtime { background: var(--accent); }
+        .balance-fill.leave { background: var(--success); }
+        .balance-fill.special { background: #8B5CF6; }
+        .balance-details { font-size: 0.7rem; color: var(--slate-500); }
+
+        /* Table */
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .data-table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        .data-table th, .data-table td {
+            padding: 0.75rem 0.875rem;
+            text-align: left;
+            border-bottom: 1px solid var(--slate-100);
+            font-size: 0.8rem;
+        }
+        .data-table th {
+            background: var(--slate-50);
+            font-weight: 700;
+            color: var(--slate-600);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .data-table tbody tr:active { background: var(--slate-50); }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .badge-pending { background: var(--warning-light); color: var(--warning); }
+        .badge-approved { background: var(--success-light); color: var(--success-dark); }
+        .badge-rejected { background: var(--danger-light); color: var(--danger); }
+
+        /* Approvals */
+        .approval-card {
+            background: white;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--slate-200);
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+        .approval-header {
+            padding: 0.875rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--slate-100);
+        }
+        .approval-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+        .approval-info { flex: 1; }
+        .approval-name { font-weight: 700; color: var(--slate-900); font-size: 0.9rem; }
+        .approval-meta { font-size: 0.7rem; color: var(--slate-500); }
+        .approval-body { padding: 1rem; }
+        .approval-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .approval-stat-value { font-size: 1.125rem; font-weight: 800; color: var(--slate-900); }
+        .approval-stat-label { font-size: 0.6rem; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.5px; }
+        .approval-notes {
+            background: var(--slate-50);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--slate-600);
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+        .approval-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .btn-approve {
+            background: var(--success);
+            color: white;
+            padding: 0.875rem;
+        }
+        .btn-approve:active { background: var(--success-dark); }
+        .btn-reject {
+            background: white;
+            color: var(--danger);
+            border: 2px solid var(--danger);
+            padding: 0.875rem;
+        }
+        .btn-reject:active { background: var(--danger-light); }
+
+        /* Export */
+        .export-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .btn-export {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.625rem 1rem;
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--slate-600);
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-export:active { background: var(--slate-50); border-color: var(--primary); color: var(--primary); }
+        .btn-export svg { width: 16px; height: 16px; }
 
         /* Modal */
         .modal-overlay {
             position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.7);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 1000;
+            padding: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal {
+            background: white;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.show .modal { transform: translateY(0); }
+        .modal-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--slate-100);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: white;
+        }
+        .modal-title { font-size: 1rem; font-weight: 700; color: var(--slate-900); }
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--slate-100);
+            border-radius: 50%;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            color: var(--slate-500);
         }
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
+        .modal-body { padding: 1.25rem; }
+        .modal-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--slate-100);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
         }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .modal-header h2 { color: #1e3a5f; }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #6b7280;
-        }
-        .modal-body .form-group { margin-bottom: 1rem; }
-        .modal-body select, .modal-body textarea {
+        .form-select {
             width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
+            padding: 0.75rem 1rem;
             font-size: 1rem;
+            font-family: inherit;
+            border: 2px solid var(--slate-200);
+            border-radius: var(--radius);
+            background: white;
         }
-        .modal-footer { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
-        .btn-secondary {
-            padding: 0.75rem 1.5rem;
-            background: #f3f4f6;
-            color: #374151;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
+        .form-select:focus { outline: none; border-color: var(--primary); }
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            font-family: inherit;
+            border: 2px solid var(--slate-200);
+            border-radius: var(--radius);
+            resize: vertical;
+            min-height: 80px;
         }
-        .btn-submit {
-            padding: 0.75rem 1.5rem;
-            background: #1e3a5f;
+        .form-textarea:focus { outline: none; border-color: var(--primary); }
+        .btn-secondary { background: var(--slate-100); color: var(--slate-700); }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--slate-900);
             color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
+            padding: 0.875rem 1rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .toast-message { flex: 1; font-size: 0.85rem; font-weight: 500; }
+
+        /* Empty State */
+        .empty-state {
+            padding: 3rem 1.5rem;
+            text-align: center;
+        }
+        .empty-state svg { width: 48px; height: 48px; color: var(--slate-300); margin-bottom: 1rem; }
+        .empty-state p { color: var(--slate-500); font-size: 0.9rem; }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .page-title { font-size: 1.125rem; font-weight: 700; color: var(--slate-900); }
+
+        /* ===== RESPONSIVE - Tablet/MDT ===== */
+        @media (min-width: 600px) {
+            .login-card { padding: 2.5rem; }
+            .login-badge { width: 88px; height: 88px; }
+            .header { padding: 0.875rem 1.25rem; }
+            .header-time { display: block; }
+            .user-info { display: block; }
+            .nav-item { flex-direction: row; font-size: 0.8rem; padding: 0.875rem 1.25rem; min-width: auto; }
+            .main { padding: 1.25rem; }
+            .clock-time { font-size: 3.5rem; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .balance-grid { grid-template-columns: repeat(2, 1fr); }
+            .modal { border-radius: var(--radius-lg); margin: 1rem; max-height: 90vh; }
+            .modal-overlay { align-items: center; padding: 1rem; }
+            .toast-container { left: auto; right: 1rem; max-width: 360px; }
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .top-bar { padding: 1rem; flex-direction: column; gap: 1rem; }
-            .nav-bar { overflow-x: auto; padding: 0 1rem; }
-            .main-content { padding: 1rem; }
-            .current-time { font-size: 2.5rem; }
+        /* Desktop */
+        @media (min-width: 1024px) {
+            .login-left { display: flex; }
+            .login-right { flex: none; width: 480px; }
+            .clock-time { font-size: 4rem; }
+            .balance-grid { grid-template-columns: repeat(4, 1fr); }
+            .bar-chart { height: 140px; }
         }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="login-screen" class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="badge-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.8 1.1 2.8 2.5V11c.6.2 1.2.8 1.2 1.5v3c0 .8-.7 1.5-1.5 1.5h-5c-.8 0-1.5-.7-1.5-1.5v-3c0-.7.5-1.3 1.2-1.5V9.5C9.2 8.1 10.6 7 12 7zm0 1.2c-.8 0-1.5.7-1.5 1.3V11h3V9.5c0-.6-.7-1.3-1.5-1.3z"/></svg>
+    <!-- Login -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-left">
+            <h1>Welcome to <span>TimeGuard</span></h1>
+            <p>Modern workforce management for Santa Fe County Sheriff's Office. Optimized for field use.</p>
+            <div class="login-features">
+                <div class="login-feature">
+                    <div class="login-feature-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    One-tap clock in/out from your MDT
                 </div>
-                <h1>Santa Fe County Sheriff</h1>
-                <p>Timekeeping Management System</p>
+                <div class="login-feature">
+                    <div class="login-feature-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    Instant supervisor approval workflow
+                </div>
+                <div class="login-feature">
+                    <div class="login-feature-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                    Real-time payroll reporting
+                </div>
             </div>
-            <div id="error-msg" class="error-msg hidden"></div>
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Enter your username">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter your password">
-            </div>
-            <button type="button" class="btn-primary" id="login-btn" onclick="handleLogin()">Sign In</button>
-            <div class="demo-creds">
-                <p>Demo Credentials:</p>
-                <p><code>deputy/demo</code> · <code>sergeant/demo</code> · <code>admin/demo</code></p>
+        </div>
+        <div class="login-right">
+            <div class="login-card">
+                <div class="login-badge">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#D4A574"/><stop offset="50%" style="stop-color:#F5D5B5"/><stop offset="100%" style="stop-color:#B8915F"/>
+                            </linearGradient>
+                            <linearGradient id="darkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0F4C5C"/><stop offset="100%" style="stop-color:#0A3640"/>
+                            </linearGradient>
+                        </defs>
+                        <polygon points="50,5 61,35 95,35 68,55 79,90 50,70 21,90 32,55 5,35 39,35" fill="url(#goldGrad)" stroke="#8B7355" stroke-width="1.5"/>
+                        <circle cx="50" cy="50" r="22" fill="url(#darkGrad)" stroke="#D4A574" stroke-width="2"/>
+                        <text x="50" y="46" text-anchor="middle" fill="white" font-size="6" font-weight="bold" font-family="Inter, sans-serif">SANTA FE</text>
+                        <text x="50" y="54" text-anchor="middle" fill="white" font-size="5" font-weight="bold" font-family="Inter, sans-serif">COUNTY</text>
+                        <text x="50" y="61" text-anchor="middle" fill="#D4A574" font-size="4.5" font-weight="bold" font-family="Inter, sans-serif">SHERIFF</text>
+                    </svg>
+                </div>
+                <div class="login-title">
+                    <h2>Sign in to TimeGuard</h2>
+                    <p>Enter your credentials to continue</p>
+                </div>
+                <div id="loginError" class="error-toast">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Invalid credentials</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="username" class="form-input" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter password">
+                </div>
+                <button class="btn btn-primary" onclick="handleLogin()">Sign In</button>
+                <div class="login-demo">
+                    <p>Quick demo access</p>
+                    <div class="demo-accounts">
+                        <button type="button" class="demo-chip" id="btnDeputy">Deputy</button>
+                        <button type="button" class="demo-chip" id="btnSergeant">Sergeant</button>
+                        <button type="button" class="demo-chip" id="btnAdmin">Admin</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Main App -->
-    <div id="app-container" class="app-container">
-        <div class="top-bar">
-            <h1>
-                <div class="top-bar-badge">
-                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+    <!-- App -->
+    <div id="app" class="app">
+        <header class="header">
+            <div class="header-inner">
+                <div class="header-brand">
+                    <div class="header-logo">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <defs><linearGradient id="goldGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#D4A574"/><stop offset="50%" style="stop-color:#F5D5B5"/><stop offset="100%" style="stop-color:#B8915F"/></linearGradient></defs>
+                            <polygon points="50,5 61,35 95,35 68,55 79,90 50,70 21,90 32,55 5,35 39,35" fill="url(#goldGrad2)" stroke="#8B7355" stroke-width="1"/>
+                            <circle cx="50" cy="50" r="18" fill="#0F4C5C" stroke="#D4A574" stroke-width="1.5"/>
+                            <text x="50" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="Inter, sans-serif">SFCO</text>
+                        </svg>
+                    </div>
+                    <div class="header-text">
+                        <h1>Santa Fe County Sheriff</h1>
+                        <span>TIMEGUARD</span>
+                    </div>
                 </div>
-                Santa Fe County Sheriff - Timekeeping
-            </h1>
-            <div class="user-info">
-                <span id="user-display"></span>
-                <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
+                <div class="header-time">
+                    <span class="time" id="headerTime">--:--:--</span>
+                    <span class="date" id="headerDate">Loading...</span>
+                </div>
+                <div class="user-menu" onclick="handleLogout()">
+                    <div class="user-avatar" id="userAvatar">--</div>
+                    <div class="user-info">
+                        <div class="name" id="userName">Loading...</div>
+                        <div class="role" id="userRole">Loading...</div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="nav-bar" id="nav-bar"></div>
-        <div class="main-content" id="main-content"></div>
+        </header>
+        <nav class="nav"><div class="nav-inner" id="navBar"></div></nav>
+        <main class="main" id="mainContent"></main>
     </div>
 
-    <!-- Submit Shift Modal -->
-    <div id="submit-modal" class="modal-overlay hidden">
-        <div class="modal-content">
+    <!-- Modal -->
+    <div id="clockOutModal" class="modal-overlay">
+        <div class="modal">
             <div class="modal-header">
-                <h2>Submit Shift for Approval</h2>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <h3 class="modal-title">Submit Time Entry</h3>
+                <button class="modal-close" onclick="closeModal('clockOutModal')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Time Bucket</label>
-                    <select id="modal-bucket">
+                    <label class="form-label">Time Category</label>
+                    <select id="modalBucket" class="form-select">
                         <option value="regular">Regular Hours</option>
                         <option value="overtime">Overtime (1.5x)</option>
                         <option value="holiday">Holiday Premium (2x)</option>
@@ -363,421 +1006,262 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Notes (Optional)</label>
-                    <textarea id="modal-notes" rows="3" placeholder="Add any notes for your supervisor..."></textarea>
+                    <label class="form-label">Notes (Optional)</label>
+                    <textarea id="modalNotes" class="form-textarea" placeholder="Add notes..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
-                <button class="btn-submit" onclick="submitShift()">Submit for Approval</button>
+                <button class="btn btn-secondary" onclick="closeModal('clockOutModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitClockOut()">Submit</button>
             </div>
         </div>
     </div>
 
+    <div id="toastContainer" class="toast-container"></div>
+
     <script>
-        // CBA-Compliant Time Buckets (Section 14 & 15)
-        var TIME_BUCKETS = [
-            { id: 'regular', name: 'Regular Hours', multiplier: 1.0 },
-            { id: 'overtime', name: 'Overtime', multiplier: 1.5 },
-            { id: 'holiday', name: 'Holiday Premium', multiplier: 2.0 },
-            { id: 'court', name: 'Court Time', multiplier: 1.5 },
-            { id: 'callback', name: 'Callback', multiplier: 1.5 },
-            { id: 'oncall', name: 'On-Call', multiplier: 0.25 },
-            { id: 'training', name: 'Training', multiplier: 1.0 },
-            { id: 'sick', name: 'Sick Leave', multiplier: 1.0 },
-            { id: 'annual', name: 'Annual Leave', multiplier: 1.0 }
+        const TIME_BUCKETS = [
+            { id: 'regular', name: 'Regular Hours', multiplier: 1.0, category: 'regular' },
+            { id: 'overtime', name: 'Overtime', multiplier: 1.5, category: 'overtime' },
+            { id: 'holiday', name: 'Holiday Premium', multiplier: 2.0, category: 'overtime' },
+            { id: 'court', name: 'Court Time', multiplier: 1.5, category: 'special' },
+            { id: 'callback', name: 'Callback', multiplier: 1.5, category: 'special' },
+            { id: 'oncall', name: 'On-Call', multiplier: 0.25, category: 'special' },
+            { id: 'training', name: 'Training', multiplier: 1.0, category: 'regular' },
+            { id: 'sick', name: 'Sick Leave', multiplier: 1.0, category: 'leave' },
+            { id: 'annual', name: 'Annual Leave', multiplier: 1.0, category: 'leave' }
         ];
-
-        // Pay rates from CBA Section 36
-        var RANK_RATES = {
-            'Deputy I': 34.03,
-            'Deputy II': 35.75,
-            'Deputy III': 41.25,
-            'Corporal': 44.00,
-            'Sergeant': 47.70,
-            'Lieutenant': 52.00
-        };
-
-        // Sample deputies
-        var SAMPLE_DEPUTIES = [
+        const RANK_RATES = { 'Deputy I': 34.03, 'Deputy II': 35.75, 'Deputy III': 41.25, 'Corporal': 44.00, 'Sergeant': 47.70, 'Lieutenant': 52.00 };
+        const SAMPLE_DEPUTIES = [
             { id: 1, name: 'Michael Rodriguez', badge: 'SF-2847', rank: 'Deputy II' },
             { id: 2, name: 'Sarah Chen', badge: 'SF-3012', rank: 'Deputy I' },
             { id: 3, name: 'James Wilson', badge: 'SF-2156', rank: 'Deputy III' },
             { id: 4, name: 'Maria Garcia', badge: 'SF-2934', rank: 'Corporal' },
             { id: 5, name: 'Robert Thompson', badge: 'SF-1823', rank: 'Sergeant' }
         ];
-
-        // Sample shifts for approval
-        var shifts = [
-            { id: 1, odfficerId: 1, date: '2024-01-15', hours: 10, bucket: 'regular', status: 'pending', notes: 'Regular patrol shift' },
-            { id: 2, odfficerId: 2, date: '2024-01-15', hours: 4, bucket: 'overtime', status: 'pending', notes: 'Extended shift - accident scene' },
-            { id: 3, odfficerId: 3, date: '2024-01-14', hours: 8, bucket: 'regular', status: 'approved', notes: '' },
-            { id: 4, odfficerId: 1, date: '2024-01-14', hours: 3, bucket: 'court', status: 'approved', notes: 'State v. Johnson testimony' },
-            { id: 5, odfficerId: 4, date: '2024-01-13', hours: 8, bucket: 'training', status: 'approved', notes: 'Firearms recertification' }
+        let shifts = [
+            { id: 1, odfficerId: 1, date: '2025-01-28', clockIn: '06:00', clockOut: '16:30', hours: 10.5, bucket: 'regular', status: 'approved', notes: 'Patrol shift' },
+            { id: 2, odfficerId: 2, date: '2025-01-28', clockIn: '14:00', clockOut: '22:00', hours: 8, bucket: 'regular', status: 'pending', notes: '' },
+            { id: 3, odfficerId: 3, date: '2025-01-28', clockIn: '07:00', clockOut: '15:00', hours: 8, bucket: 'regular', status: 'approved', notes: '' },
+            { id: 4, odfficerId: 1, date: '2025-01-27', clockIn: '08:00', clockOut: '12:00', hours: 4, bucket: 'court', status: 'pending', notes: 'State v. Johnson' },
+            { id: 5, odfficerId: 4, date: '2025-01-27', clockIn: '08:00', clockOut: '16:00', hours: 8, bucket: 'training', status: 'approved', notes: 'Firearms' },
+            { id: 6, odfficerId: 2, date: '2025-01-27', clockIn: '18:00', clockOut: '02:00', hours: 8, bucket: 'regular', status: 'approved', notes: '' },
+            { id: 7, odfficerId: 3, date: '2025-01-26', clockIn: '06:00', clockOut: '18:00', hours: 12, bucket: 'holiday', status: 'pending', notes: 'Holiday coverage' },
+            { id: 8, odfficerId: 5, date: '2025-01-26', clockIn: '08:00', clockOut: '16:00', hours: 8, bucket: 'regular', status: 'approved', notes: '' }
         ];
+        const leaveBalances = { 1: { sick: 72, annual: 96 }, 2: { sick: 88, annual: 80 }, 3: { sick: 64, annual: 112 }, 4: { sick: 96, annual: 120 }, 5: { sick: 48, annual: 64 } };
+        let currentUser = null, currentView = 'dashboard', isClockedIn = false, clockInTime = null, clockInterval = null;
 
-        // App state
-        var currentUser = null;
-        var currentView = 'timeclock';
-        var isClockedIn = false;
-        var clockInTime = null;
-        var selectedBucket = 'regular';
-        var clockInterval = null;
-
-        // DOM Elements
-        var loginScreen = document.getElementById('login-screen');
-        var appContainer = document.getElementById('app-container');
-        var errorMsg = document.getElementById('error-msg');
-
-        // Handle login
         function handleLogin() {
-            var username = document.getElementById('username').value;
-            var password = document.getElementById('password').value;
-
-            errorMsg.classList.add('hidden');
-            document.getElementById('login-btn').textContent = 'Signing In...';
-
-            setTimeout(function() {
-                if (username === 'deputy' && password === 'demo') {
-                    currentUser = { id: 1, name: 'Michael Rodriguez', badge: 'SF-2847', rank: 'Deputy II', role: 'deputy' };
-                    showApp();
-                } else if (username === 'sergeant' && password === 'demo') {
-                    currentUser = { id: 5, name: 'Robert Thompson', badge: 'SF-1823', rank: 'Sergeant', role: 'supervisor' };
-                    currentView = 'approvals';
-                    showApp();
-                } else if (username === 'admin' && password === 'demo') {
-                    currentUser = { id: 0, name: 'Admin User', badge: 'SF-0001', rank: 'Lieutenant', role: 'admin' };
-                    currentView = 'reports';
-                    showApp();
-                } else {
-                    errorMsg.textContent = 'Invalid credentials. Try: deputy/demo, sergeant/demo, or admin/demo';
-                    errorMsg.classList.remove('hidden');
-                }
-                document.getElementById('login-btn').textContent = 'Sign In';
-            }, 500);
+            const u = document.getElementById('username').value, p = document.getElementById('password').value;
+            document.getElementById('loginError').classList.remove('show');
+            if (u === 'deputy' && p === 'demo') currentUser = { id: 1, name: 'Michael Rodriguez', badge: 'SF-2847', rank: 'Deputy II', role: 'deputy' };
+            else if (u === 'sergeant' && p === 'demo') currentUser = { id: 5, name: 'Robert Thompson', badge: 'SF-1823', rank: 'Sergeant', role: 'supervisor' };
+            else if (u === 'admin' && p === 'demo') currentUser = { id: 0, name: 'Admin User', badge: 'SF-0001', rank: 'Lieutenant', role: 'admin' };
+            else { document.getElementById('loginError').classList.add('show'); return; }
+            showApp();
         }
-
-        // Handle logout
+        function quickLogin(role) {
+            console.log('quickLogin called with role:', role);
+            document.getElementById('loginError').classList.remove('show');
+            if (role === 'deputy') {
+                currentUser = { id: 1, name: 'Michael Rodriguez', badge: 'SF-2847', rank: 'Deputy II', role: 'deputy' };
+            } else if (role === 'sergeant') {
+                currentUser = { id: 5, name: 'Robert Thompson', badge: 'SF-1823', rank: 'Sergeant', role: 'supervisor' };
+            } else if (role === 'admin') {
+                currentUser = { id: 0, name: 'Admin User', badge: 'SF-0001', rank: 'Lieutenant', role: 'admin' };
+            }
+            console.log('currentUser set to:', currentUser);
+            showApp();
+        }
         function handleLogout() {
-            currentUser = null;
-            currentView = 'timeclock';
-            isClockedIn = false;
-            clockInTime = null;
+            currentUser = null; currentView = 'dashboard'; isClockedIn = false; clockInTime = null;
             if (clockInterval) clearInterval(clockInterval);
-            loginScreen.style.display = 'flex';
-            appContainer.classList.remove('active');
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('app').classList.remove('active');
+            document.getElementById('username').value = ''; document.getElementById('password').value = '';
         }
-
-        // Show main app
         function showApp() {
-            loginScreen.style.display = 'none';
-            appContainer.classList.add('active');
-            document.getElementById('user-display').textContent = currentUser.name + ' (' + currentUser.rank + ')';
-            renderNav();
-            renderView();
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('app').classList.add('active');
+            document.getElementById('userAvatar').textContent = currentUser.name.split(' ').map(n => n[0]).join('');
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = currentUser.rank;
+            startClock(); renderNav(); renderView();
         }
-
-        // Render navigation
-        function renderNav() {
-            var navHtml = '';
-
-            if (currentUser.role === 'deputy' || currentUser.role === 'supervisor' || currentUser.role === 'admin') {
-                navHtml += '<button class="nav-btn ' + (currentView === 'timeclock' ? 'active' : '') + '" onclick="switchView(\'timeclock\')">Time Clock</button>';
-                navHtml += '<button class="nav-btn ' + (currentView === 'myhours' ? 'active' : '') + '" onclick="switchView(\'myhours\')">My Hours</button>';
-            }
-
-            if (currentUser.role === 'supervisor' || currentUser.role === 'admin') {
-                navHtml += '<button class="nav-btn ' + (currentView === 'approvals' ? 'active' : '') + '" onclick="switchView(\'approvals\')">Approvals</button>';
-            }
-
-            if (currentUser.role === 'admin') {
-                navHtml += '<button class="nav-btn ' + (currentView === 'reports' ? 'active' : '') + '" onclick="switchView(\'reports\')">Reports</button>';
-            }
-
-            document.getElementById('nav-bar').innerHTML = navHtml;
-        }
-
-        // Switch view
-        function switchView(view) {
-            currentView = view;
-            renderNav();
-            renderView();
-        }
-
-        // Render current view
-        function renderView() {
-            var content = '';
-            switch(currentView) {
-                case 'timeclock':
-                    content = renderTimeClock();
-                    break;
-                case 'myhours':
-                    content = renderMyHours();
-                    break;
-                case 'approvals':
-                    content = renderApprovals();
-                    break;
-                case 'reports':
-                    content = renderReports();
-                    break;
-            }
-            document.getElementById('main-content').innerHTML = content;
-
-            if (currentView === 'timeclock') {
-                startClock();
-            }
-        }
-
-        // Format time
-        function formatTime(date) {
-            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        }
-
-        // Format date
-        function formatDate(date) {
-            return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        }
-
-        // Start clock update
         function startClock() {
-            if (clockInterval) clearInterval(clockInterval);
-
-            function updateClock() {
-                var timeEl = document.getElementById('current-time');
-                var dateEl = document.getElementById('current-date');
-                if (timeEl && dateEl) {
-                    var now = new Date();
-                    timeEl.textContent = formatTime(now);
-                    dateEl.textContent = formatDate(now);
-                }
+            function update() {
+                const now = new Date();
+                document.getElementById('headerTime').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                document.getElementById('headerDate').textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             }
-
-            updateClock();
-            clockInterval = setInterval(updateClock, 1000);
+            update(); clockInterval = setInterval(update, 1000);
         }
-
-        // Render time clock view
-        function renderTimeClock() {
-            var now = new Date();
-            var statusClass = isClockedIn ? 'clocked-in' : 'clocked-out';
-            var statusText = isClockedIn ? 'CLOCKED IN since ' + formatTime(clockInTime) : 'CLOCKED OUT';
-
-            var bucketsHtml = TIME_BUCKETS.map(function(bucket) {
-                var rate = RANK_RATES[currentUser.rank] * bucket.multiplier;
-                return '<button class="bucket-btn ' + (selectedBucket === bucket.id ? 'selected' : '') + '" onclick="selectBucket(\'' + bucket.id + '\')">' +
-                    '<div class="bucket-name">' + bucket.name + '</div>' +
-                    '<div class="bucket-rate">$' + rate.toFixed(2) + '/hr (' + bucket.multiplier + 'x)</div>' +
-                '</button>';
-            }).join('');
-
-            return '<div class="card">' +
-                '<div class="time-clock-display">' +
-                    '<div class="current-time" id="current-time">' + formatTime(now) + '</div>' +
-                    '<div class="current-date" id="current-date">' + formatDate(now) + '</div>' +
-                    '<div class="clock-status ' + statusClass + '">' + statusText + '</div>' +
-                    '<div class="clock-buttons">' +
-                        '<button class="btn-clock btn-clock-in" onclick="clockIn()" ' + (isClockedIn ? 'disabled' : '') + '>Clock In</button>' +
-                        '<button class="btn-clock btn-clock-out" onclick="clockOut()" ' + (!isClockedIn ? 'disabled' : '') + '>Clock Out</button>' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-            '<div class="card">' +
-                '<div class="card-header"><h2>Select Time Bucket</h2></div>' +
-                '<p style="color: #6b7280; margin-bottom: 1rem; font-size: 0.9rem;">Per CBA Section 14 & 15 - Select the appropriate category for your shift</p>' +
-                '<div class="bucket-grid">' + bucketsHtml + '</div>' +
-            '</div>';
+        function renderNav() {
+            const items = [
+                { id: 'dashboard', label: 'Dashboard', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>' },
+                { id: 'timesheet', label: 'Entries', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>' },
+                { id: 'balances', label: 'Balances', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>' }
+            ];
+            if (currentUser.role === 'supervisor' || currentUser.role === 'admin') {
+                const pendingCount = shifts.filter(s => s.status === 'pending').length;
+                items.push({ id: 'approvals', label: 'Approvals', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>', badge: pendingCount });
+                items.push({ id: 'reports', label: 'Reports', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>' });
+            }
+            document.getElementById('navBar').innerHTML = items.map(i => `
+                <div class="nav-item-wrapper">
+                    <button class="nav-item ${currentView === i.id ? 'active' : ''}" onclick="switchView('${i.id}')">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">${i.icon}</svg>
+                        ${i.label}
+                    </button>
+                    ${i.badge ? `<span class="nav-badge">${i.badge}</span>` : ''}
+                </div>
+            `).join('');
         }
-
-        // Select time bucket
-        function selectBucket(bucketId) {
-            selectedBucket = bucketId;
-            renderView();
+        function switchView(v) { currentView = v; renderNav(); renderView(); }
+        function renderView() {
+            const c = document.getElementById('mainContent');
+            switch(currentView) {
+                case 'dashboard': c.innerHTML = renderDashboard(); break;
+                case 'timesheet': c.innerHTML = renderTimesheet(); break;
+                case 'balances': c.innerHTML = renderBalances(); break;
+                case 'approvals': c.innerHTML = renderApprovals(); break;
+                case 'reports': c.innerHTML = renderReports(); break;
+            }
         }
-
-        // Clock in
-        function clockIn() {
-            isClockedIn = true;
-            clockInTime = new Date();
-            renderView();
-        }
-
-        // Clock out
-        function clockOut() {
-            document.getElementById('submit-modal').classList.remove('hidden');
-        }
-
-        // Close modal
-        function closeModal() {
-            document.getElementById('submit-modal').classList.add('hidden');
-        }
-
-        // Submit shift
-        function submitShift() {
-            var bucket = document.getElementById('modal-bucket').value;
-            var notes = document.getElementById('modal-notes').value;
-
-            var endTime = new Date();
-            var hoursWorked = (endTime - clockInTime) / (1000 * 60 * 60);
-
-            shifts.unshift({
-                id: shifts.length + 1,
-                odfficerId: currentUser.id,
-                date: clockInTime.toISOString().split('T')[0],
-                hours: Math.round(hoursWorked * 100) / 100,
-                bucket: bucket,
-                status: 'pending',
-                notes: notes
+        function renderDashboard() {
+            const now = new Date();
+            const myShifts = shifts.filter(s => s.odfficerId === currentUser.id && s.status === 'approved');
+            const totalHours = myShifts.reduce((sum, s) => sum + s.hours, 0);
+            const pendingCount = shifts.filter(s => s.odfficerId === currentUser.id && s.status === 'pending').length;
+            const otHours = myShifts.filter(s => ['overtime', 'holiday'].includes(s.bucket)).reduce((sum, s) => sum + s.hours, 0);
+            const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            const ampm = now.toLocaleTimeString('en-US', { hour12: true }).split(' ')[1];
+            const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const chartData = days.map(d => ({ label: d, value: Math.random() * 10 + 2 }));
+            const maxVal = Math.max(...chartData.map(d => d.value));
+            const recent = shifts.slice(0, 4).map(s => {
+                const dep = SAMPLE_DEPUTIES.find(d => d.id === s.odfficerId) || { name: 'Unknown' };
+                const bkt = TIME_BUCKETS.find(b => b.id === s.bucket);
+                return { title: `${dep.name.split(' ')[0]} - ${bkt.name}`, meta: `${s.hours}h`, time: s.clockOut || s.clockIn, type: s.status };
             });
-
-            isClockedIn = false;
-            clockInTime = null;
-            closeModal();
-            renderView();
-            alert('Shift submitted for approval!');
+            return `
+                <div class="welcome-bar"><h2>Welcome, ${currentUser.name.split(' ')[0]}</h2><p>${dateStr}</p></div>
+                <div class="clock-card">
+                    <div class="clock-inner">
+                        <div class="clock-status ${isClockedIn ? 'active' : ''}"><span class="status-dot ${isClockedIn ? 'active' : ''}"></span>${isClockedIn ? 'On Duty' : 'Off Duty'}</div>
+                        <div class="clock-display"><span class="clock-time">${timeStr.replace(ampm, '')}</span><span class="clock-ampm">${ampm}</span></div>
+                        <div class="clock-date">${dateStr}</div>
+                        <div class="clock-buttons">
+                            <button class="btn-clock btn-clock-in" onclick="clockIn()" ${isClockedIn ? 'disabled' : ''}>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                                Clock In
+                            </button>
+                            <button class="btn-clock btn-clock-out" onclick="openClockOutModal()" ${!isClockedIn ? 'disabled' : ''}>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                Clock Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon primary"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><span class="stat-badge up">+12%</span></div><div class="stat-value">${totalHours.toFixed(1)}</div><div class="stat-label">Hours This Period</div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon warning"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div></div><div class="stat-value">${pendingCount}</div><div class="stat-label">Pending</div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon accent"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></div></div><div class="stat-value">${otHours.toFixed(1)}</div><div class="stat-label">Overtime</div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div></div><div class="stat-value">$${(totalHours * RANK_RATES[currentUser.rank]).toFixed(0)}</div><div class="stat-label">Est. Pay</div></div>
+                </div>
+                <div class="card"><div class="card-header"><h3 class="card-title">Weekly Hours</h3></div><div class="card-body"><div class="chart-container"><div class="bar-chart">${chartData.map(d => `<div class="bar-item"><div class="bar-value">${d.value.toFixed(0)}h</div><div class="bar" style="height:${(d.value/maxVal)*100}%"></div><div class="bar-label">${d.label}</div></div>`).join('')}</div></div></div></div>
+                <div class="card"><div class="card-header"><h3 class="card-title">Recent Activity</h3></div><div class="card-body flush"><div class="activity-list">${recent.map(a => `<div class="activity-item"><div class="activity-icon ${a.type}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">${a.type === 'approved' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>' : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>'}</svg></div><div class="activity-content"><div class="activity-title">${a.title}</div><div class="activity-meta">${a.meta}</div></div><div class="activity-time">${a.time}</div></div>`).join('')}</div></div></div>
+            `;
         }
-
-        // Render my hours view
-        function renderMyHours() {
-            var myShifts = shifts.filter(function(s) { return s.odfficerId === currentUser.id; });
-
-            var totalHours = myShifts.reduce(function(sum, s) { return sum + s.hours; }, 0);
-            var pendingHours = myShifts.filter(function(s) { return s.status === 'pending'; }).reduce(function(sum, s) { return sum + s.hours; }, 0);
-            var approvedHours = myShifts.filter(function(s) { return s.status === 'approved'; }).reduce(function(sum, s) { return sum + s.hours; }, 0);
-
-            var tableRows = myShifts.map(function(shift) {
-                var bucket = TIME_BUCKETS.find(function(b) { return b.id === shift.bucket; });
-                var rate = RANK_RATES[currentUser.rank] * bucket.multiplier;
-                var earnings = shift.hours * rate;
-
-                return '<tr>' +
-                    '<td>' + shift.date + '</td>' +
-                    '<td>' + shift.hours.toFixed(2) + '</td>' +
-                    '<td>' + bucket.name + '</td>' +
-                    '<td>$' + earnings.toFixed(2) + '</td>' +
-                    '<td><span class="status-badge status-' + shift.status + '">' + shift.status.charAt(0).toUpperCase() + shift.status.slice(1) + '</span></td>' +
-                '</tr>';
-            }).join('');
-
-            return '<div class="stats-grid">' +
-                '<div class="stat-card"><div class="stat-label">Total Hours</div><div class="stat-value">' + totalHours.toFixed(1) + '</div><div class="stat-sub">This pay period</div></div>' +
-                '<div class="stat-card"><div class="stat-label">Pending Approval</div><div class="stat-value">' + pendingHours.toFixed(1) + '</div><div class="stat-sub">Awaiting supervisor</div></div>' +
-                '<div class="stat-card"><div class="stat-label">Approved Hours</div><div class="stat-value">' + approvedHours.toFixed(1) + '</div><div class="stat-sub">Ready for payroll</div></div>' +
-            '</div>' +
-            '<div class="card">' +
-                '<div class="card-header"><h2>My Time Entries</h2></div>' +
-                '<table class="data-table">' +
-                    '<thead><tr><th>Date</th><th>Hours</th><th>Category</th><th>Earnings</th><th>Status</th></tr></thead>' +
-                    '<tbody>' + (tableRows || '<tr><td colspan="5" style="text-align:center;color:#6b7280;">No time entries yet</td></tr>') + '</tbody>' +
-                '</table>' +
-            '</div>';
+        function renderTimesheet() {
+            const my = shifts.filter(s => s.odfficerId === currentUser.id);
+            return `<div class="page-header"><h2 class="page-title">Time Entries</h2></div><div class="card"><div class="card-body flush"><div class="table-container"><table class="data-table"><thead><tr><th>Date</th><th>Time</th><th>Hours</th><th>Category</th><th>Status</th></tr></thead><tbody>${my.map(s => { const b = TIME_BUCKETS.find(x => x.id === s.bucket); return `<tr><td><strong>${s.date}</strong></td><td>${s.clockIn} - ${s.clockOut}</td><td>${s.hours}h</td><td>${b.name}</td><td><span class="badge badge-${s.status}">${s.status.charAt(0).toUpperCase() + s.status.slice(1)}</span></td></tr>`; }).join('')}</tbody></table></div></div></div>`;
         }
-
-        // Render approvals view
+        function renderBalances() {
+            const my = shifts.filter(s => s.odfficerId === currentUser.id && s.status === 'approved');
+            const bal = leaveBalances[currentUser.id] || { sick: 96, annual: 120 };
+            const bycat = { regular: 0, overtime: 0, leave: 0, special: 0 };
+            my.forEach(s => { const b = TIME_BUCKETS.find(x => x.id === s.bucket); bycat[b.category] += s.hours; });
+            const sickUsed = my.filter(s => s.bucket === 'sick').reduce((sum, s) => sum + s.hours, 0);
+            const annualUsed = my.filter(s => s.bucket === 'annual').reduce((sum, s) => sum + s.hours, 0);
+            return `<div class="page-header"><h2 class="page-title">Hour Balances</h2></div><div class="balance-grid">
+                <div class="balance-card"><div class="balance-header"><div class="balance-type"><span class="balance-dot regular"></span><span class="balance-name">Regular</span></div><span class="balance-hours">${bycat.regular.toFixed(1)}h</span></div><div class="balance-bar"><div class="balance-fill regular" style="width:${Math.min((bycat.regular/80)*100,100)}%"></div></div><div class="balance-details">This pay period</div></div>
+                <div class="balance-card"><div class="balance-header"><div class="balance-type"><span class="balance-dot overtime"></span><span class="balance-name">Overtime</span></div><span class="balance-hours">${bycat.overtime.toFixed(1)}h</span></div><div class="balance-bar"><div class="balance-fill overtime" style="width:${Math.min((bycat.overtime/20)*100,100)}%"></div></div><div class="balance-details">Including holiday</div></div>
+                <div class="balance-card"><div class="balance-header"><div class="balance-type"><span class="balance-dot leave"></span><span class="balance-name">Sick Leave</span></div><span class="balance-hours">${(bal.sick - sickUsed).toFixed(1)}h</span></div><div class="balance-bar"><div class="balance-fill leave" style="width:${((bal.sick - sickUsed)/bal.sick)*100}%"></div></div><div class="balance-details">Used: ${sickUsed}h / ${bal.sick}h</div></div>
+                <div class="balance-card"><div class="balance-header"><div class="balance-type"><span class="balance-dot special"></span><span class="balance-name">Annual</span></div><span class="balance-hours">${(bal.annual - annualUsed).toFixed(1)}h</span></div><div class="balance-bar"><div class="balance-fill special" style="width:${((bal.annual - annualUsed)/bal.annual)*100}%"></div></div><div class="balance-details">Used: ${annualUsed}h / ${bal.annual}h</div></div>
+            </div>`;
+        }
         function renderApprovals() {
-            var pendingShifts = shifts.filter(function(s) { return s.status === 'pending'; });
-
-            var tableRows = pendingShifts.map(function(shift) {
-                var deputy = SAMPLE_DEPUTIES.find(function(d) { return d.id === shift.odfficerId; }) || { name: 'Unknown', badge: 'N/A', rank: 'N/A' };
-                var bucket = TIME_BUCKETS.find(function(b) { return b.id === shift.bucket; });
-
-                return '<tr>' +
-                    '<td><strong>' + deputy.name + '</strong><br><span style="color:#6b7280;font-size:0.85rem;">' + deputy.badge + '</span></td>' +
-                    '<td>' + shift.date + '</td>' +
-                    '<td>' + shift.hours.toFixed(2) + '</td>' +
-                    '<td>' + bucket.name + '</td>' +
-                    '<td>' + (shift.notes || '-') + '</td>' +
-                    '<td>' +
-                        '<button class="btn-action btn-approve" onclick="approveShift(' + shift.id + ')">Approve</button>' +
-                        '<button class="btn-action btn-reject" onclick="rejectShift(' + shift.id + ')">Reject</button>' +
-                    '</td>' +
-                '</tr>';
-            }).join('');
-
-            return '<div class="stats-grid">' +
-                '<div class="stat-card"><div class="stat-label">Pending Approvals</div><div class="stat-value">' + pendingShifts.length + '</div><div class="stat-sub">Requires attention</div></div>' +
-            '</div>' +
-            '<div class="card">' +
-                '<div class="card-header"><h2>Shifts Pending Approval</h2></div>' +
-                '<table class="data-table">' +
-                    '<thead><tr><th>Deputy</th><th>Date</th><th>Hours</th><th>Category</th><th>Notes</th><th>Actions</th></tr></thead>' +
-                    '<tbody>' + (tableRows || '<tr><td colspan="6" style="text-align:center;color:#6b7280;">No pending approvals</td></tr>') + '</tbody>' +
-                '</table>' +
-            '</div>';
+            const pending = shifts.filter(s => s.status === 'pending');
+            if (!pending.length) return `<div class="page-header"><h2 class="page-title">Approvals</h2></div><div class="card"><div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p>All caught up! No pending approvals.</p></div></div>`;
+            return `<div class="page-header"><h2 class="page-title">Approvals</h2><span class="badge badge-pending">${pending.length} pending</span></div>${pending.map(s => {
+                const d = SAMPLE_DEPUTIES.find(x => x.id === s.odfficerId) || { name: 'Unknown', badge: 'N/A', rank: 'Unknown' };
+                const b = TIME_BUCKETS.find(x => x.id === s.bucket);
+                const rate = RANK_RATES[d.rank] * b.multiplier;
+                return `<div class="approval-card"><div class="approval-header"><div class="approval-avatar">${d.name.split(' ').map(n => n[0]).join('')}</div><div class="approval-info"><div class="approval-name">${d.name}</div><div class="approval-meta">${d.badge} · ${d.rank}</div></div><span class="badge badge-pending">${b.name}</span></div><div class="approval-body"><div class="approval-grid"><div><div class="approval-stat-value">${s.date}</div><div class="approval-stat-label">Date</div></div><div><div class="approval-stat-value">${s.hours}h</div><div class="approval-stat-label">Hours</div></div><div><div class="approval-stat-value">$${(s.hours * rate).toFixed(0)}</div><div class="approval-stat-label">Amount</div></div></div>${s.notes ? `<div class="approval-notes">"${s.notes}"</div>` : ''}<div class="approval-actions"><button class="btn btn-approve" onclick="approveShift(${s.id})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Approve</button><button class="btn btn-reject" onclick="rejectShift(${s.id})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Reject</button></div></div></div>`;
+            }).join('')}`;
         }
-
-        // Approve shift
-        function approveShift(shiftId) {
-            var shift = shifts.find(function(s) { return s.id === shiftId; });
-            if (shift) {
-                shift.status = 'approved';
-                renderView();
-            }
-        }
-
-        // Reject shift
-        function rejectShift(shiftId) {
-            var shift = shifts.find(function(s) { return s.id === shiftId; });
-            if (shift) {
-                shift.status = 'rejected';
-                renderView();
-            }
-        }
-
-        // Render reports view
         function renderReports() {
-            var totalByBucket = {};
-            TIME_BUCKETS.forEach(function(bucket) {
-                totalByBucket[bucket.id] = 0;
-            });
-
-            shifts.filter(function(s) { return s.status === 'approved'; }).forEach(function(shift) {
-                totalByBucket[shift.bucket] += shift.hours;
-            });
-
-            var bucketRows = TIME_BUCKETS.map(function(bucket) {
-                var hours = totalByBucket[bucket.id];
-                var avgRate = 40; // Average rate for estimation
-                var cost = hours * avgRate * bucket.multiplier;
-                return '<tr>' +
-                    '<td>' + bucket.name + '</td>' +
-                    '<td>' + hours.toFixed(2) + '</td>' +
-                    '<td>' + bucket.multiplier + 'x</td>' +
-                    '<td>$' + cost.toFixed(2) + '</td>' +
-                '</tr>';
-            }).join('');
-
-            var totalApproved = shifts.filter(function(s) { return s.status === 'approved'; }).length;
-            var totalPending = shifts.filter(function(s) { return s.status === 'pending'; }).length;
-            var totalHours = shifts.filter(function(s) { return s.status === 'approved'; }).reduce(function(sum, s) { return sum + s.hours; }, 0);
-
-            return '<div class="stats-grid">' +
-                '<div class="stat-card"><div class="stat-label">Total Approved Hours</div><div class="stat-value">' + totalHours.toFixed(1) + '</div><div class="stat-sub">This pay period</div></div>' +
-                '<div class="stat-card"><div class="stat-label">Approved Entries</div><div class="stat-value">' + totalApproved + '</div><div class="stat-sub">Ready for payroll</div></div>' +
-                '<div class="stat-card"><div class="stat-label">Pending Entries</div><div class="stat-value">' + totalPending + '</div><div class="stat-sub">Awaiting approval</div></div>' +
-                '<div class="stat-card"><div class="stat-label">Active Deputies</div><div class="stat-value">' + SAMPLE_DEPUTIES.length + '</div><div class="stat-sub">In system</div></div>' +
-            '</div>' +
-            '<div class="card">' +
-                '<div class="card-header"><h2>Hours by Category (CBA Compliance Report)</h2></div>' +
-                '<table class="data-table">' +
-                    '<thead><tr><th>Category</th><th>Hours</th><th>Rate Multiplier</th><th>Est. Cost</th></tr></thead>' +
-                    '<tbody>' + bucketRows + '</tbody>' +
-                '</table>' +
-            '</div>';
+            const approved = shifts.filter(s => s.status === 'approved');
+            return `<div class="page-header"><h2 class="page-title">Reports</h2></div><div class="export-bar"><button class="btn-export" onclick="exportCSV()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export CSV</button><button class="btn-export"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Email Payroll</button></div><div class="card"><div class="card-header"><h3 class="card-title">Hours by Officer</h3></div><div class="card-body flush"><div class="table-container"><table class="data-table"><thead><tr><th>Officer</th><th style="text-align:right">Reg</th><th style="text-align:right">OT</th><th style="text-align:right">Leave</th><th style="text-align:right">Total</th><th style="text-align:right">Cost</th></tr></thead><tbody>${SAMPLE_DEPUTIES.map(d => {
+                const ds = approved.filter(s => s.odfficerId === d.id);
+                const reg = ds.filter(s => ['regular', 'training'].includes(s.bucket)).reduce((sum, s) => sum + s.hours, 0);
+                const ot = ds.filter(s => ['overtime', 'holiday'].includes(s.bucket)).reduce((sum, s) => sum + s.hours, 0);
+                const lv = ds.filter(s => ['sick', 'annual'].includes(s.bucket)).reduce((sum, s) => sum + s.hours, 0);
+                const total = reg + ot + lv;
+                const cost = (reg * RANK_RATES[d.rank]) + (ot * RANK_RATES[d.rank] * 1.5) + (lv * RANK_RATES[d.rank]);
+                return `<tr><td><strong>${d.name}</strong><br><span style="color:var(--slate-500);font-size:0.7rem">${d.badge}</span></td><td style="text-align:right">${reg.toFixed(1)}</td><td style="text-align:right">${ot.toFixed(1)}</td><td style="text-align:right">${lv.toFixed(1)}</td><td style="text-align:right;font-weight:700">${total.toFixed(1)}</td><td style="text-align:right;font-weight:700">$${cost.toFixed(0)}</td></tr>`;
+            }).join('')}</tbody></table></div></div></div>`;
         }
-
-        // Allow Enter key to submit login
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleLogin();
-            }
-        });
-        document.getElementById('username').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleLogin();
-            }
-        });
+        function clockIn() { isClockedIn = true; clockInTime = new Date(); showToast('Clocked in successfully!', 'success'); renderView(); }
+        function openClockOutModal() { document.getElementById('clockOutModal').classList.add('show'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        function submitClockOut() {
+            const bucket = document.getElementById('modalBucket').value;
+            const notes = document.getElementById('modalNotes').value;
+            const end = new Date();
+            const hrs = (end - clockInTime) / (1000 * 60 * 60);
+            shifts.unshift({ id: shifts.length + 1, odfficerId: currentUser.id, date: clockInTime.toISOString().split('T')[0], clockIn: clockInTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), clockOut: end.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), hours: Math.round(hrs * 100) / 100, bucket, status: 'pending', notes });
+            isClockedIn = false; clockInTime = null;
+            closeModal('clockOutModal');
+            document.getElementById('modalNotes').value = '';
+            showToast('Time entry submitted!', 'success');
+            renderNav(); renderView();
+        }
+        function approveShift(id) { const s = shifts.find(x => x.id === id); if (s) { s.status = 'approved'; showToast('Approved!', 'success'); renderNav(); renderView(); } }
+        function rejectShift(id) { const s = shifts.find(x => x.id === id); if (s) { s.status = 'rejected'; showToast('Rejected', 'error'); renderNav(); renderView(); } }
+        function exportCSV() {
+            const approved = shifts.filter(s => s.status === 'approved');
+            let csv = 'Employee ID,Name,Badge,Rank,Date,Hours,Category,Rate,Amount\n';
+            approved.forEach(s => {
+                const d = SAMPLE_DEPUTIES.find(x => x.id === s.odfficerId);
+                const b = TIME_BUCKETS.find(x => x.id === s.bucket);
+                const rate = d ? RANK_RATES[d.rank] * b.multiplier : 40;
+                csv += [d?.id || 'N/A', `"${d?.name || 'Unknown'}"`, d?.badge || 'N/A', d?.rank || 'N/A', s.date, s.hours.toFixed(2), b.name, rate.toFixed(2), (s.hours * rate).toFixed(2)].join(',') + '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'sfco_payroll_' + new Date().toISOString().split('T')[0] + '.csv';
+            link.click();
+            showToast('CSV exported!', 'success');
+        }
+        function showToast(msg, type = 'info') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>' : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>'}</svg><span class="toast-message">${msg}</span>`;
+            c.appendChild(t);
+            setTimeout(() => t.classList.add('show'), 10);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
+        }
+        document.getElementById('password').addEventListener('keypress', e => { if (e.key === 'Enter') handleLogin(); });
+        document.getElementById('username').addEventListener('keypress', e => { if (e.key === 'Enter') handleLogin(); });
+        document.getElementById('btnDeputy').onclick = function() { quickLogin('deputy'); };
+        document.getElementById('btnSergeant').onclick = function() { quickLogin('sergeant'); };
+        document.getElementById('btnAdmin').onclick = function() { quickLogin('admin'); };
     </script>
 </body>
 </html>
